@@ -9,18 +9,21 @@ public delegate void OrbitEvent(Orbitter orbitter);
 //orbits the target, always looking at it, can be made to move further or close
 public class Orbitter : MonoBehaviour {
 	[SerializeField]
-	private Rigidbody _parent = null;
+	private Transform _parent = null;
 	[SerializeField]
 	private Transform _target = null;
 	[SerializeField]
 	private Vector3 _speedScale = Vector3.one;
 	[SerializeField]
 	private Vector2 _distanceLimit = new Vector2(1.0f, 100.0f);
+	[SerializeField]
+	private float _scrollTime = 0.25f;
+	[SerializeField]
+	private float _spinTime = 0.5f;
 
 	private float _distance = 0.0f;
-	private Rigidbody _body = null;
-	private float _scrollTime = 0.25f;
-	private Coroutine _faceHandle = null;
+	private Vector3 _rotation = Vector3.zero;
+	private Coroutine _moveHandle = null;
 	public OrbitEvent OnZoom { get; set; }
 	public float DistanceScale {
 		get {
@@ -30,8 +33,9 @@ public class Orbitter : MonoBehaviour {
 
 	private void Start() {
 		//start in the middle of our range
-		_parent.transform.position = _target.position;
+		_parent.position = _target.position;
 		_distance = _distanceLimit.y;
+		_rotation = transform.rotation.eulerAngles;
 		transform.position = Vector3.forward * _distanceLimit.y;
 
 		MoveByDelta(Vector3.zero);
@@ -42,22 +46,20 @@ public class Orbitter : MonoBehaviour {
 		delta.Scale(_speedScale);
 
 		//rotating
-		Vector3 newForward = Vector3.RotateTowards(transform.forward, transform.up, delta.y, 0.0f);
-		_parent.angularVelocity += Vector3.up * delta.x;
-		_parent.angularVelocity += transform.right * -delta.y;
+		Vector3 vel = (Vector3.up * delta.x) + (Vector3.right * delta.y);
+		_rotation += vel;
+		DOTween.Kill(_parent);
+		_parent.DORotate(_rotation, _spinTime);
+		// _parent.rotation = Quaternion.Euler(_rotation);
 	}
 
-	//`MAt this is used to avoid a slow Update ()
-	private IEnumerator FaceTarget() {
-		while (!_parent.IsSleeping()) {
-			transform.LookAt(_target, Vector3.up);
+	//`Mat this is used to avoid a slow Update ()
+	private IEnumerator HandleMovement() {
+		while (DOTween.IsTweening(_parent)) {
+			transform.LookAt(_target);
 			yield return null;
 		}
 	}
-
-	// private void Update() {
-	// 	Debug.Log(transform.up);
-	// }
 
 	private void GotoDistanceDelta(float delta) {
 		//zooming
@@ -70,8 +72,8 @@ public class Orbitter : MonoBehaviour {
 
 	public void OnPointerDown(BaseEventData baseData) {
 		//only run FaceTarget while we are moving, once we stop (even if zooming), there's no need
-		if (_faceHandle != null) { StopCoroutine(_faceHandle); }
-		_faceHandle = StartCoroutine(FaceTarget());
+		if (_moveHandle != null) { StopCoroutine(_moveHandle); }
+		_moveHandle = StartCoroutine(HandleMovement());
 	}
 
 	public void OnPointerUp(BaseEventData baseData) {
