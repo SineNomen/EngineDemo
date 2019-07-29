@@ -17,6 +17,8 @@ public class DemoManager : MonoBehaviour {
 	private Orbitter _orbitter = null;
 	[SerializeField]
 	private Material _casingMaterial = null;
+	[SerializeField]
+	private ParticleSystem _exhaustEffect = null;
 
 	private float _engineSpeed = 7.0f;
 
@@ -52,5 +54,8 @@ public class DemoManager : MonoBehaviour {
 		_engineSpeed = val;
 		_engineAnimator.speed = _engineSpeed;
 		_engineSpeedText.text = string.Format("Engine Speed: {0}", Mathf.RoundToInt(val));
+		ParticleSystem.MainModule main = _exhaustEffect.main;
+		//`Mat hack, magic number, just add a little to make it have a trail
+		main.startSpeed = val + 4.0f;
 	}
 }
