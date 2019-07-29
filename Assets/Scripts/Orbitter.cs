@@ -5,6 +5,7 @@ using UnityEngine.EventSystems;
 using UnityEngine;
 using DG.Tweening;
 
+public delegate void OrbitEvent(Orbitter orbitter);
 //orbits the target, always looking at it, can be made to move further or close
 public class Orbitter : MonoBehaviour {
 	[SerializeField]
@@ -20,6 +21,7 @@ public class Orbitter : MonoBehaviour {
 	private Rigidbody _body = null;
 	private float _scrollTime = 0.25f;
 	private Coroutine _faceHandle = null;
+	public OrbitEvent OnZoom { get; set; }
 	public float DistanceScale {
 		get {
 			return (_distance - _distanceLimit.x) / (_distanceLimit.y - _distanceLimit.x);
@@ -29,7 +31,8 @@ public class Orbitter : MonoBehaviour {
 	private void Start() {
 		//start in the middle of our range
 		_parent.transform.position = _target.position;
-		transform.position = Vector3.forward * (_distanceLimit.x + ((_distanceLimit.y - _distanceLimit.x) * 0.5f));
+		_distance = _distanceLimit.y;
+		transform.position = Vector3.forward * _distanceLimit.y;
 
 		MoveByDelta(Vector3.zero);
 		transform.LookAt(_target);
@@ -52,14 +55,17 @@ public class Orbitter : MonoBehaviour {
 		}
 	}
 
-	private void Update() {
-		Debug.Log(transform.up);
-	}
+	// private void Update() {
+	// 	Debug.Log(transform.up);
+	// }
 
 	private void GotoDistanceDelta(float delta) {
 		//zooming
 		_distance = Mathf.Clamp(_distance + (delta * _speedScale.z), _distanceLimit.x, _distanceLimit.y);
 		transform.DOLocalMove(new Vector3(0.0f, 0.0f, _distance), _scrollTime);
+		if (OnZoom != null) {
+			OnZoom(this);
+		}
 	}
 
 	public void OnPointerDown(BaseEventData baseData) {

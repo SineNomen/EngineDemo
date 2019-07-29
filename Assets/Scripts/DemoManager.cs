@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine;
+using System;
 
 public class DemoManager : MonoBehaviour {
 	[SerializeField]
@@ -12,9 +13,14 @@ public class DemoManager : MonoBehaviour {
 	private Slider _engineSpeedSlider = null;
 	[SerializeField]
 	private Text _engineSpeedText = null;
+	[SerializeField]
+	private Orbitter _orbitter = null;
+	[SerializeField]
+	private Material _casingMaterial = null;
 
 	private float _engineSpeed = 7.0f;
 
+	private bool _showInteralOnZoom = true;
 
 	private void Start() {
 		_engineSpeedSlider.minValue = 1.0f;
@@ -23,6 +29,23 @@ public class DemoManager : MonoBehaviour {
 		OnEngineSpeedChanged(_engineSpeedSlider.value);
 
 		_engineSpeedSlider.onValueChanged.AddListener(OnEngineSpeedChanged);
+
+		_orbitter.OnZoom += OnZoom;
+	}
+
+	private void OnZoom(Orbitter orbitter) {
+		Color color = _casingMaterial.color;
+		if (_showInteralOnZoom) {
+			color.a = orbitter.DistanceScale;
+		} else {
+			color.a = 1.0f;
+		}
+		_casingMaterial.color = color;
+	}
+
+	public void OnToggleShowInternal(bool val) {
+		_showInteralOnZoom = val;
+		OnZoom(_orbitter);
 	}
 
 	private void OnEngineSpeedChanged(float val) {
