@@ -28,6 +28,6 @@ public class DemoManager : MonoBehaviour {
 	private void OnEngineSpeedChanged(float val) {
 		_engineSpeed = val;
 		_engineAnimator.speed = _engineSpeed;
-		_engineSpeedText.text = string.Format("{0}", Mathf.RoundToInt(val));
+		_engineSpeedText.text = string.Format("Engine Speed: {0}", Mathf.RoundToInt(val));
 	}
 }
