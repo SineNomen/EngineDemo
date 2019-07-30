@@ -73,6 +73,9 @@ namespace EngineDemo {
 			_casingMaterial.color = color;
 		}
 
+		public void OnRepoButton() {
+			Application.OpenURL("https://github.com/SineNomen/EngineDemo");
+		}
 		public void OnToggleShowInternal(bool val) {
 			_showInteralOnZoom = val;
 			OnZoom(_orbitter);
