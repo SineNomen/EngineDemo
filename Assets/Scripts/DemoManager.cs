@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine;
+using DG.Tweening;
 using TMPro;
 
 public class DemoManager : MonoBehaviour {
+	[SerializeField]
+	private CanvasGroup _splashGroup = null;
 	[SerializeField]
 	private float _engineSpeedMax = 30.0f;
 	[SerializeField]
@@ -44,6 +47,17 @@ public class DemoManager : MonoBehaviour {
 		StartCoroutine(UpdateTorque());
 		StartCoroutine(UpdateRPM());
 		StartCoroutine(UpdateOilTemp());
+	}
+
+	public void OnStartGame() {
+		Sequence seq = DOTween.Sequence();
+		seq.Append(_splashGroup.DOFade(0.0f, 0.25f));
+		seq.Insert(0.2f, _orbitter.IntroTween());
+		seq.AppendCallback(() => {
+			_splashGroup.interactable = false;
+			_splashGroup.blocksRaycasts = false;
+		});
+
 	}
 
 	private void OnZoom(Orbitter orbitter) {

@@ -23,7 +23,6 @@ public class Orbitter : MonoBehaviour {
 
 	private float _distance = 0.0f;
 	private Vector3 _rotation = Vector3.zero;
-	private Coroutine _moveHandle = null;
 	public OrbitEvent OnZoom { get; set; }
 	public float DistanceScale {
 		get {
@@ -53,14 +52,6 @@ public class Orbitter : MonoBehaviour {
 		// _parent.rotation = Quaternion.Euler(_rotation);
 	}
 
-	//`Mat this is used to avoid a slow Update ()
-	private IEnumerator HandleMovement() {
-		while (DOTween.IsTweening(_parent)) {
-			transform.LookAt(_target);
-			yield return null;
-		}
-	}
-
 	private void GotoDistanceDelta(float delta) {
 		//zooming
 		_distance = Mathf.Clamp(_distance + (delta * _speedScale.z), _distanceLimit.x, _distanceLimit.y);
@@ -70,14 +61,9 @@ public class Orbitter : MonoBehaviour {
 		}
 	}
 
-	public void OnPointerDown(BaseEventData baseData) {
-		//only run FaceTarget while we are moving, once we stop (even if zooming), there's no need
-		if (_moveHandle != null) { StopCoroutine(_moveHandle); }
-		_moveHandle = StartCoroutine(HandleMovement());
-	}
-
-	public void OnPointerUp(BaseEventData baseData) {
-		MoveByDelta(Vector2.zero);
+	public Tween IntroTween() {
+		Sequence seq = DOTween.Sequence();
+		return seq;
 	}
 
 	public void OnPointerDrag(BaseEventData baseData) {

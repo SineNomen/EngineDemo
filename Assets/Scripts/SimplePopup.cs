@@ -35,9 +35,5 @@ public class SimplePopup : MonoBehaviour {
 		if (_facePlayer) {
 			this.transform.forward = _playerCamera.transform.forward;
 		}
-		// if (_lineTarget != null) {
-		// 	Vector3 pos = transform.position - (transform.forward * 1.0f);
-		// 	Debug.DrawLine(pos, _lineTarget.position, Color.white, -1, true);
-		// }
 	}
 }
