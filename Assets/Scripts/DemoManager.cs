@@ -125,7 +125,7 @@ public class DemoManager : MonoBehaviour {
 			} else {
 				color = "#00FF33FF";
 			}
-			_temperaturePopup.Text = string.Format("Oil Temp: <color={0}>{1:00}</color> F", color, temp);
+			_temperaturePopup.Text = string.Format("Oil Temp: <color={0}>{1:0.0}</color> F", color, temp);
 			yield return new WaitForSeconds(1.0f);
 		}
 	}
