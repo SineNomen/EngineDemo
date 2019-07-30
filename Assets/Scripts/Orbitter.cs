@@ -54,6 +54,7 @@ public class Orbitter : MonoBehaviour {
 
 	private void GotoDistanceDelta(float delta) {
 		//zooming
+		Debug.Log(_distance);
 		_distance = Mathf.Clamp(_distance + (delta * _speedScale.z), _distanceLimit.x, _distanceLimit.y);
 		transform.DOLocalMove(new Vector3(0.0f, 0.0f, _distance), _scrollTime);
 		if (OnZoom != null) {
@@ -63,6 +64,14 @@ public class Orbitter : MonoBehaviour {
 
 	public Tween IntroTween() {
 		Sequence seq = DOTween.Sequence();
+		float animTime = 4.0f;
+		_distance = _distanceLimit.x + ((_distanceLimit.y - _distanceLimit.x) * 0.5f);
+		_rotation = new Vector3(18.0f, 48.0f, 0.0f);
+		seq.Join(_parent.DORotate(_rotation, animTime));
+		seq.Join(transform.DOLocalMove(new Vector3(0.0f, 0.0f, _distance), animTime));
+		seq.OnUpdate(() => {
+			if (OnZoom != null) { OnZoom(this); }
+		});
 		return seq;
 	}
 
