@@ -54,7 +54,6 @@ public class Orbitter : MonoBehaviour {
 
 	private void GotoDistanceDelta(float delta) {
 		//zooming
-		Debug.Log(_distance);
 		_distance = Mathf.Clamp(_distance + (delta * _speedScale.z), _distanceLimit.x, _distanceLimit.y);
 		transform.DOLocalMove(new Vector3(0.0f, 0.0f, _distance), _scrollTime);
 		if (OnZoom != null) {

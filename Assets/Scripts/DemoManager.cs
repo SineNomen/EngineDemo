@@ -23,6 +23,8 @@ public class DemoManager : MonoBehaviour {
 	[SerializeField]
 	private ParticleSystem _exhaustEffect = null;
 	[SerializeField]
+	private ParticleSystem _intakeEffect = null;
+	[SerializeField]
 	private SimplePopup _torquePopup = null;
 	[SerializeField]
 	private SimplePopup _rpmPopup = null;
@@ -150,8 +152,20 @@ public class DemoManager : MonoBehaviour {
 		_engineSpeedText.text = string.Format("Engine Speed: {0}", Mathf.RoundToInt(val));
 		//`Mat magic number just to establish some kind of range
 		_lastTorque = _engineSpeed * 10;
-		ParticleSystem.MainModule main = _exhaustEffect.main;
-		//`Mat hack, magic number, just add a little to make it have a trail
-		main.startSpeed = val + 4.0f;
+		//`Mat magic number, just add a little to make it have a trail
+		ParticleSystem.MainModule exhaust = _exhaustEffect.main;
+		exhaust.startSpeed = val + 4.0f;
+
+		ParticleSystem.MainModule intake = _intakeEffect.main;
+		float baseSpeed = -10.0f;
+		float baseLifetime = 1.0f;
+		int baseRate = 20;
+		float scaledVal = val * 0.5f;
+		intake.startSpeed = scaledVal * baseSpeed;
+		intake.startLifetime = baseLifetime / scaledVal;
+		ParticleSystem.EmissionModule emission = _intakeEffect.emission;
+		emission.rateOverTime = baseRate * scaledVal;
+		Debug.Log(emission.rateOverTime);
+		_intakeEffect.Clear();
 	}
 }
